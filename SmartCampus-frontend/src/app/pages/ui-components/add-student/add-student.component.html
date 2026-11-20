@@ -1,0 +1,173 @@
+<div class="form-header">
+  <div class="header-content">
+    <h1 class="text-[#015F78]"><mat-icon class="text-[#015F78]">school</mat-icon> Gestion des Étudiants</h1>
+    <p class="text-[#015F78]/600">Ajoutez un nouvel étudiant ou importez depuis un fichier Excel.</p>
+  </div>
+</div>
+
+<mat-card class="form-container full-width-card">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="form-content">
+
+    <!-- Nom et Prénom -->
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label><mat-icon class="text-[#015F78]">badge</mat-icon> Nom</mat-label>
+        <input matInput formControlName="lastName" placeholder="Nom">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label><mat-icon class="text-[#015F78]">person</mat-icon> Prénom</mat-label>
+        <input matInput formControlName="firstName" placeholder="Prénom">
+      </mat-form-field>
+    </div>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Semestre</mat-label>
+      <mat-select formControlName="semester" required>
+        <mat-option value="Semestre 1">Semestre 1</mat-option>
+        <mat-option value="Semestre 2">Semestre 2</mat-option>
+        <mat-option value="Semestre 3">Semestre 3</mat-option>
+        <mat-option value="Semestre 4">Semestre 4</mat-option>
+        <mat-option value="Semestre 5">Semestre 5</mat-option>
+        <mat-option value="Semestre 6">Semestre 6</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <!-- Email et Téléphone -->
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label><mat-icon class="text-[#015F78]">alternate_email</mat-icon> Email</mat-label>
+        <input matInput formControlName="email" placeholder="exemple@etu.com">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label><mat-icon class="text-[#015F78]">phone</mat-icon> Téléphone</mat-label>
+        <input matInput formControlName="phoneNumber" placeholder="+212...">
+      </mat-form-field>
+    </div>
+
+    <!-- CNE et Niveau scolaire -->
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label><mat-icon class="text-[#015F78]">credit_card</mat-icon> CNE</mat-label>
+        <input matInput formControlName="cne">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label><mat-icon class="text-[#015F78]">school</mat-icon> Niveau scolaire</mat-label>
+        <mat-select formControlName="niveauScolaire">
+          <mat-option *ngFor="let niveau of niveaux" [value]="niveau">{{ niveau }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Année universitaire et Filière -->
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label><mat-icon class="text-[#015F78]">calendar_today</mat-icon> Année Universitaire</mat-label>
+        <mat-select formControlName="anneeUniversitaire">
+          <mat-option *ngFor="let year of years" [value]="year">{{ year }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label><mat-icon class="text-[#015F78]">business</mat-icon> Filière</mat-label>
+        <mat-select formControlName="majorId">
+          <mat-option *ngFor="let mj of majors" [value]="mj.id">{{ mj.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Rôle -->
+    <div class="row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label><mat-icon class="text-[#015F78]">verified_user</mat-icon> Rôle</mat-label>
+        <input matInput formControlName="role" readonly>
+      </mat-form-field>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="btn-container">
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || isImporting">
+        <mat-icon>save</mat-icon> Enregistrer l'étudiant
+      </button>
+
+      <div class="import-section">
+        <label class="import-label">
+          <input type="file" id="fileUpload" (change)="onFileChange($event)" accept=".xlsx, .xls" hidden />
+          <button mat-stroked-button color="primary" type="button" (click)="triggerFileInput()" [disabled]="isImporting">
+            <mat-icon class="text-[#015F78]">upload</mat-icon> Importer Excel
+          </button>
+        </label>
+        <button mat-raised-button color="primary" (click)="importStudents()" [disabled]="!selectedFile || isImporting" class="import-btn">
+          <mat-icon class="text-white">file_download</mat-icon> Importer les étudiants
+        </button>
+      </div>
+
+      <div *ngIf="selectedFile" class="selected-file-info">
+        <mat-icon>insert_drive_file</mat-icon>
+        <span>{{ selectedFile.name }}</span>
+      </div>
+
+      <!-- Progress Bar -->
+      <div *ngIf="isImporting" class="import-progress-section">
+        <div class="progress-label">
+          <span>{{ importProgress }}%</span>
+          <span>{{ importTotal }} étudiants</span>
+        </div>
+        <mat-progress-bar mode="determinate" [value]="importProgress" color="primary"></mat-progress-bar>
+      </div>
+    </div>
+  </form>
+</mat-card>
+
+<!-- Template d'import Excel -->
+<div class="import-template-card">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Modèle d'import Excel</mat-card-title>
+      <mat-card-subtitle>Téléchargez un modèle d'exemple pour l'import en masse</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="import-template-content">
+        <p><strong>Format attendu du fichier Excel (.xlsx ou .xls) :</strong></p>
+        <table class="template-table">
+          <thead>
+            <tr>
+              <th>Prénom</th>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Téléphone</th>
+              <th>CNE</th>
+              <th>Niveau scolaire</th>
+              <th>Année universitaire</th>
+              <th>Semestre</th>
+              <th>Rôle</th>
+              <th>Filière</th>
+              <th>URL Photo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mohamed</td>
+              <td>Ali</td>
+              <td>mohamed.ali&#64;etu.com</td>
+              <td>+212600000000</td>
+              <td>CNE12345</td>
+              <td>1ère année</td>
+              <td>2024-2025</td>
+              <td>Semestre 1</td>
+              <td>STUDENT</td>
+              <td>Informatique</td>
+              <td>https://example.com/photo1.jpg</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="template-note">
+          <small>
+            Le nom de la filière doit correspondre exactement à une filière existante dans le système.<br>
+            Le mot de passe par défaut sera généré automatiquement.
+          </small>
+        </p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

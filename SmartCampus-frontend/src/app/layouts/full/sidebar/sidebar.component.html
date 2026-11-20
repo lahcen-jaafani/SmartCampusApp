@@ -1,0 +1,16 @@
+<div class="d-flex align-items-center justify-content-between">
+  <div class="brand">
+    <div class="brand-logo">SC</div>
+    <div class="brand-text">
+      <strong>Smart Campus</strong>
+      <small>SMART CAMPUS</small>
+    </div>
+  </div>
+
+  @if(showToggle) {
+    <a href="javascript:void(0)" (click)="toggleMobileNav.emit()"
+       class="d-flex justify-content-center ng-star-inserted icon-40 align-items-center">
+      <i-tabler name="x" class="icon-20 d-flex"></i-tabler>
+    </a>
+  }
+</div>

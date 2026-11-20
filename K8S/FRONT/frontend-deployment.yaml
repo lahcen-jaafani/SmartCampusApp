@@ -19,4 +19,4 @@ spec:
             - containerPort: 80
           env:
             - name: BACKEND_URL
-              value: http://backend:8080
+              value: http://backend:8090

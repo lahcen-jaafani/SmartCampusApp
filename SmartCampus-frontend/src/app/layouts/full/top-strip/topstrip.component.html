@@ -1,0 +1,88 @@
+<div class="app-topstrip px-4 sm:px-6 lg:px-8 py-3 w-full flex flex-wrap justify-between items-center gap-4 bg-[#015F78] shadow-lg border-b border-[#044b63]">
+
+  <!-- Partie gauche -->
+  <div class="flex flex-wrap items-center gap-2 text-white">
+
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 mr-3 group">
+      <mat-icon class="text-2xl text-white group-hover:scale-110 transition-transform duration-200">school</mat-icon>
+      <span class="font-bold text-lg hidden md:block tracking-tight text-white">SmartCampus KHOURIBGA</span>
+    </a>
+
+    <!-- Menu Formation -->
+    <div class="relative group">
+      <button mat-button class="flex items-center gap-1.5 hover:bg-white/10 rounded-lg px-3 py-2 transition-all duration-200 text-white text-sm font-medium">
+        <mat-icon class="text-base">school</mat-icon>
+        <span class="hidden sm:inline">FORMATION</span>
+        <mat-icon class="transform group-hover:rotate-180 transition-transform text-base">arrow_drop_down</mat-icon>
+      </button>
+      <div class="absolute left-0 mt-1 w-56 bg-[#015F78] rounded-md shadow-2xl z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-[#044b63]">
+        <div *ngFor="let item of items" (click)="navigateToMajor(item)"
+             class="px-4 py-2.5 text-white hover:bg-white/10 cursor-pointer flex items-center gap-2 transition-colors text-sm font-medium">
+          <mat-icon class="text-blue-300 text-base">school</mat-icon>
+          <span>{{ item.name }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Autres liens -->
+    <a mat-button routerLink="/ui-components/departments"
+       class="flex items-center gap-1.5 hover:bg-white/10 rounded-lg px-3 py-2 transition-all duration-200 text-white text-sm font-medium">
+      <mat-icon class="text-base">domain</mat-icon>
+      <span class="hidden sm:inline">DÉPARTEMENTS</span>
+    </a>
+
+    <a mat-button routerLink="/ui-components/library"
+       class="flex items-center gap-1.5 hover:bg-white/10 rounded-lg px-3 py-2 transition-all duration-200 text-white text-sm font-medium">
+      <mat-icon class="text-base">local_library</mat-icon>
+      <span class="hidden sm:inline">BIBLIOTHÈQUE</span>
+    </a>
+
+    <a mat-button routerLink="/ui-components/contact"
+       class="flex items-center gap-1.5 hover:bg-white/10 rounded-lg px-3 py-2 transition-all duration-200 text-white text-sm font-medium">
+      <mat-icon class="text-base">contact_mail</mat-icon>
+      <span class="hidden sm:inline">CONTACT</span>
+    </a>
+  </div>
+
+  <!-- Partie droite -->
+  <div class="flex flex-wrap items-center gap-3 text-white">
+
+    <!-- Contacts -->
+    <div class="hidden md:flex items-center gap-3">
+      <a mat-button class="flex items-center gap-1.5 hover:bg-white/10 rounded-full px-3 py-1 transition-all duration-200 text-white text-sm">
+        <mat-icon class="text-blue-300 text-base">phone</mat-icon>
+        <span>+212 5XX XXX XXX</span>
+      </a>
+
+      <a mat-button class="flex items-center gap-1.5 hover:bg-white/10 rounded-full px-3 py-1 transition-all duration-200 text-white text-sm">
+        <mat-icon class="text-blue-300 text-base">email</mat-icon>
+        <span>SmartCampus&usms.ac.ma</span>
+      </a>
+    </div>
+
+    <!-- Espaces -->
+    <div class="flex items-center gap-2 border-l border-white/15 pl-3">
+      <a *ngIf="!isAuthenticated" mat-button routerLink="/ui-components/login"
+         class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 rounded-full px-4 py-1.5 transition-all duration-200 text-white text-xs font-medium">
+        <mat-icon class="text-base">person</mat-icon>
+        <span class="hidden sm:inline">ESPACE ÉTUDIANT</span>
+      </a>
+
+      <a *ngIf="!isAuthenticated" mat-button routerLink="/ui-components/login"
+         class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 rounded-full px-4 py-1.5 transition-all duration-200 text-white text-xs font-medium">
+        <mat-icon class="text-base">school</mat-icon>
+        <span class="hidden sm:inline">ESPACE ENSEIGNANT</span>
+      </a>
+
+      <div *ngIf="isAuthenticated" class="flex items-center gap-2 bg-white/10 rounded-full px-3 py-1">
+        <mat-icon class="text-base">person</mat-icon>
+        <span class="text-sm font-medium">{{ userFullName }}</span>
+      </div>
+      <button *ngIf="isAuthenticated" mat-icon-button matTooltip="Se déconnecter" (click)="logout()"
+              class="hover:bg-white/20 rounded-full transition-all duration-200">
+        <mat-icon class="text-red-300 hover:text-red-100">logout</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

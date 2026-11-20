@@ -16,7 +16,7 @@ spec:
         - name: backend
           image: lahcenjf/backend:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 8090
           env:
             - name: SPRING_DATASOURCE_URL
               value: jdbc:mysql://mysql:3306/products-management?useSSL=false&allowPublicKeyRetrieval=true

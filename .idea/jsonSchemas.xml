@@ -12,7 +12,7 @@
               <option name="patterns">
                 <list>
                   <Item>
-                    <option name="path" value="gestion_scolaire_back/.github/workflows/main.yml" />
+                    <option name="path" value="SmartCampus-backend/.github/workflows/main.yml" />
                   </Item>
                 </list>
               </option>

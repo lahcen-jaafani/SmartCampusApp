@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: app-config
 data:
-  backend-url: "http://backend:8080"
+  backend-url: "http://backend:8090"
   mysql-host: "mysql"
   mysql-db: "products-management"
