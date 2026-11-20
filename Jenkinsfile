@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -57,45 +58,85 @@ pipeline {
                 script {
                     echo 'Starting SmartCampus deployment...'
 
-                    // Stop previous Backend process
+                    // Stop previous applications
                     sh '''
-                        pkill -f 'school_management-back-0.0.1-SNAPSHOT.jar' || true
+                        if [ -f SmartCampus-backend/backend.pid ]; then
+                            kill "$(cat SmartCampus-backend/backend.pid)" 2>/dev/null || true
+                            rm -f SmartCampus-backend/backend.pid
+                        fi
+
+                        if [ -f SmartCampus-frontend/frontend.pid ]; then
+                            kill "$(cat SmartCampus-frontend/frontend.pid)" 2>/dev/null || true
+                            rm -f SmartCampus-frontend/frontend.pid
+                        fi
                     '''
 
-                    // Start Backend Spring Boot
-                    sh '''
-                        cd SmartCampus-backend
-
-                        nohup java -jar app.jar \
-                            --server.port=8090 \
-                            > backend.log 2>&1 < /dev/null &
-                    '''
-
-                    // Stop previous Frontend process
-                    sh '''
-                        pkill -f 'ng serve --host 0.0.0.0' || true
-                    '''
-
-                    // Start Frontend Angular
-                    dir("${FRONTEND_DIR}") {
+                    // Start Backend
+                    dir("${BACKEND_DIR}") {
                         sh '''
-                            nohup npm start -- --host 0.0.0.0 --port 4200 \
-                                > frontend.log 2>&1 < /dev/null &
+                            JENKINS_NODE_COOKIE=dontKillMe \
+                            nohup java -jar app.jar \
+                                --server.port=${BACKEND_PORT} \
+                                > backend.log 2>&1 < /dev/null &
+
+                            echo $! > backend.pid
                         '''
                     }
 
-                    echo 'Backend: http://localhost:8090'
-                    echo 'Frontend: http://localhost:4200'
+                    // Start Frontend
+                    dir("${FRONTEND_DIR}") {
+                        sh '''
+                            JENKINS_NODE_COOKIE=dontKillMe \
+                            nohup npm start -- \
+                                --host 0.0.0.0 \
+                                --port ${FRONTEND_PORT} \
+                                > frontend.log 2>&1 < /dev/null &
+
+                            echo $! > frontend.pid
+                        '''
+                    }
+
+                    echo 'Applications started.'
                 }
+            }
+        }
+
+        // 6. Verify Deployment
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                    echo "Checking Backend..."
+
+                    for i in $(seq 1 30); do
+                        if curl -fsS http://localhost:${BACKEND_PORT}/actuator/health >/dev/null; then
+                            echo "Backend is running!"
+                            break
+                        fi
+                        sleep 2
+                    done
+
+                    echo "Checking Frontend..."
+
+                    for i in $(seq 1 30); do
+                        if curl -fsS http://localhost:${FRONTEND_PORT} >/dev/null; then
+                            echo "Frontend is running!"
+                            exit 0
+                        fi
+                        sleep 2
+                    done
+
+                    echo "Frontend failed to start!"
+                    cat SmartCampus-frontend/frontend.log
+                    exit 1
+                '''
             }
         }
     }
 
     post {
-
         always {
             archiveArtifacts(
-                artifacts: 'SmartCampus-backend/target/*.jar',
+                artifacts: 'SmartCampus-backend/target/*.jar,SmartCampus-backend/*.log,SmartCampus-frontend/frontend.log',
                 fingerprint: true,
                 allowEmptyArchive: true
             )
@@ -103,10 +144,12 @@ pipeline {
 
         success {
             echo 'SmartCampus CI/CD pipeline completed successfully!'
+            echo 'Backend: http://localhost:8090'
+            echo 'Frontend: http://localhost:4200'
         }
 
         failure {
-            echo 'Pipeline failed. Check Jenkins console output.'
+            echo 'Deployment failed. Check application logs.'
         }
     }
 }
