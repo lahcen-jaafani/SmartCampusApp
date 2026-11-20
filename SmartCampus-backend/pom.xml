@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.sid</groupId>
-    <artifactId>school_management-back</artifactId>
+    <artifactId>smartcampus</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>school_management-back</name>
+    <name>smartcampus</name>
     <description>school_management-back</description>
     <url/>
     <licenses>
