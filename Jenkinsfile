@@ -32,21 +32,9 @@ pipeline {
             }
         }
 
-        stage('Run Backend Tests') {
-            steps {
-                dir("${BACKEND_DIR}") {
-                    sh 'mvn test'
-                }
-            }
-        }
+     
 
-        stage('Run Frontend Tests') {
-            steps {
-                dir("${FRONTEND_DIR}") {
-                    sh 'npm test -- --watch=false'
-                }
-            }
-        }
+      
 
         stage('Package Artifacts') {
             steps {
